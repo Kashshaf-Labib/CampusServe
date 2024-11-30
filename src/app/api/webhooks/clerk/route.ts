@@ -5,6 +5,7 @@ import { clerkClient } from "@clerk/nextjs/server";
 import { NextResponse } from "next/server";
 
 import { createUser } from "@/lib/actions/user.action";
+import User from './../../../../lib/models/User';
 
 export async function POST(req: Request) {
   const SIGNING_SECRET = process.env.SIGNING_SECRET;
