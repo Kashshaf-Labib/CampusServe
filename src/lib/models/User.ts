@@ -1,6 +1,6 @@
-import { Schema, model, Document } from "mongoose";
+import { Schema, model,models} from "mongoose";
 
-interface IUser extends Document {
+export interface IUser {
   userid: string;
   email: string;
   token?: string; // Optional if suer wants to store the token used for the order
@@ -16,5 +16,5 @@ const userSchema = new Schema<IUser>({
   createdAt: { type: Date, default: Date.now },
 });
 
-const User = model<IUser>("User", userSchema);
+const User = models.user || model<IUser>("user", userSchema);
 export default User;

@@ -1,10 +1,10 @@
-import { Schema, model, Document } from "mongoose";
+import { Schema, model, models } from "mongoose";
 
-interface IReview extends Document {
-  foodItem: { type: Schema.Types.ObjectId; ref: "FoodItem" }; // Reference to the food item
-  student: { type: Schema.Types.ObjectId; ref: "User" }; // Reference to the student leaving the review
+export interface IReview {
+  foodItem: Schema.Types.ObjectId; // Reference to FoodItem
+  student: Schema.Types.ObjectId; // Reference to User
   rating: number; // Rating (1-5 scale)
-  comment: string;
+  comment: string; // Review comment
   createdAt: Date;
 }
 
@@ -16,5 +16,6 @@ const reviewSchema = new Schema<IReview>({
   createdAt: { type: Date, default: Date.now },
 });
 
-const Review = model<IReview>("Review", reviewSchema);
+const Review = models.Review || model<IReview>("Review", reviewSchema);
 export default Review;
+

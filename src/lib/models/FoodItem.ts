@@ -1,10 +1,10 @@
-import { Schema, model, Document } from "mongoose";
+import { Schema, model, models } from "mongoose";
 
-interface IFoodItem extends Document {
+export interface IFoodItem {
   name: string;
   description: string;
   price: number;
-  imageUrl?: string; // Optional, for image of the food item
+  imageUrl?: string; // Optional image URL for food items
   createdAt: Date;
 }
 
@@ -16,5 +16,5 @@ const foodItemSchema = new Schema<IFoodItem>({
   createdAt: { type: Date, default: Date.now },
 });
 
-const FoodItem = model<IFoodItem>("FoodItem", foodItemSchema);
+const FoodItem = models.FoodItem || model<IFoodItem>("FoodItem", foodItemSchema);
 export default FoodItem;
