@@ -9,6 +9,8 @@ const links = [
   { id: 1, title: "Home", url: "/" },
   { id: 2, title: "Menu", url: "/menu" },
   { id: 3, title: "Contact", url: "/contact" },
+  { id: 4, title: "Cart", url: "/cart" },
+  { id: 5, title: "Orders", url: "/orders" },
 ];
 
 const SideMenu = () => {
@@ -74,14 +76,6 @@ const SideMenu = () => {
                 </Link>
               </motion.div>
             ) : (
-              // <motion.div
-              //   whileHover={{ scale: 1.1, color: "#F87171" }}
-              //   transition={{ type: "spring", stiffness: 300 }}
-              // >
-              //   <Link href="/orders" onClick={() => setOpen(false)}>
-              //     Orders
-              //   </Link>
-              // </motion.div>
               <UserButton
                 appearance={{
                   elements: {

@@ -5,7 +5,6 @@ import { clerkClient } from "@clerk/nextjs/server";
 import { NextResponse } from "next/server";
 
 import { createUser } from "@/lib/actions/user.action";
-import User from "./../../../../lib/models/User";
 
 export async function POST(req: Request) {
   const SIGNING_SECRET = process.env.SIGNING_SECRET;
@@ -59,11 +58,13 @@ export async function POST(req: Request) {
 
   //Create user in mongodb
   if (eventType === "user.created") {
-    const { id, email_addresses } = evt.data;
+    const { id, email_addresses,first_name,last_name } = evt.data;
 
     const user = {
       userid: id,
       email: email_addresses[0].email_address,
+      first_name:first_name,
+      last_name:last_name,
       token: null,
       orders: [],
     };
@@ -72,13 +73,6 @@ export async function POST(req: Request) {
 
     const newUser = await createUser(user);
 
-    // if (newUser) {
-    //   await clerkClient.users.updateUserMetadata(id, {
-    //     publicMetadata: {
-    //       userId: newUser._id,
-    //     },
-    //   });
-    // }
     return NextResponse.json({ message: "New user created", user: newUser });
   }
   console.log(`Received webhook with ID ${id} and event type of ${eventType}`);

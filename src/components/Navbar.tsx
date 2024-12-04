@@ -4,7 +4,7 @@ import SideMenu from "./SideMenu";
 import { motion } from "framer-motion";
 import { useAuth, UserButton } from "@clerk/nextjs";
 const Navbar = () => {
-  const {isSignedIn} = useAuth();
+  const { isSignedIn } = useAuth();
   return (
     <motion.div
       className="h-16 p-4 flex items-center justify-between border-b-[1px] border-gray-700 bg-gray-900 text-white md:h-20 lg:px-20 xl:px-40"
@@ -69,13 +69,6 @@ const Navbar = () => {
             </Link>
           </motion.div>
         ) : (
-          // <motion.div
-          //   whileHover={{ scale: 1.1 }}
-          //   whileTap={{ scale: 0.95 }}
-          //   className="hover:text-red-500 transition duration-300"
-          // >
-          //   <Link href="/orders">Orders</Link>
-          // </motion.div>
           <UserButton
             appearance={{
               elements: {
@@ -90,6 +83,13 @@ const Navbar = () => {
           className="hover:text-red-500 transition duration-300"
         >
           <Link href="/cart">Cart</Link>
+        </motion.div>
+        <motion.div
+          whileHover={{ scale: 1.1 }}
+          whileTap={{ scale: 0.95 }}
+          className="hover:text-red-500 transition duration-300"
+        >
+          <Link href="/orders">Orders</Link>
         </motion.div>
       </div>
     </motion.div>
