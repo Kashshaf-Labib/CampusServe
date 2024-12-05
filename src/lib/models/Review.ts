@@ -1,3 +1,5 @@
+import "./User";
+import "./FoodItem";
 import { Schema, model, models } from "mongoose";
 
 export interface IReview {
@@ -18,4 +20,3 @@ const reviewSchema = new Schema<IReview>({
 
 const Review = models.Review || model<IReview>("Review", reviewSchema);
 export default Review;
-

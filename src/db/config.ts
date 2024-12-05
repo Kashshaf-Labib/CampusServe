@@ -23,8 +23,8 @@ export const dbConnect = async () => {
     cached.promise ||
     mongoose.connect(MONGODB_URI, {
       dbName: "campusserve",
-      bufferCommands: false,
-      connectTimeoutMS: 10000,
+      // bufferCommands: false,
+      // connectTimeoutMS: 10000,
     });
 
   cached.conn = await cached.promise;
