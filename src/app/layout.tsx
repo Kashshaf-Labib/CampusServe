@@ -1,7 +1,8 @@
 import Navbar from "@/components/Navbar";
-import Footer from "@/components/Footer"
+import Footer from "@/components/Footer";
 import "./globals.css";
 import { ClerkProvider } from "@clerk/nextjs";
+import ChatbotProvider from "@/components/ChatbotProvider";
 
 export default function RootLayout({
   children,
@@ -12,9 +13,9 @@ export default function RootLayout({
     <ClerkProvider dynamic>
       <html lang="en">
         <body>
-          <Navbar/>
-          {children}
-          <Footer/>
+          <Navbar />
+          <ChatbotProvider>{children}</ChatbotProvider>
+          <Footer />
         </body>
       </html>
     </ClerkProvider>
