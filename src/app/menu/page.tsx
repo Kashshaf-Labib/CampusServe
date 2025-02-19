@@ -4,13 +4,14 @@ import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import axios from "axios";
 import { SignedIn, useUser } from "@clerk/nextjs";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 interface Review {
   student: {
     first_name: string;
     last_name: string;
   };
-  //username: string;
   rating: number;
   comment: string;
 }
@@ -44,6 +45,7 @@ const MenuPage = () => {
         setFoodItems(data);
       } catch (error) {
         console.log("Error fetching menu:", error);
+        toast.error("Failed to fetch menu.");
       }
     };
     fetchMenu();
@@ -60,7 +62,7 @@ const MenuPage = () => {
       setNewReview({ rating: 0, comment: "" }); // Reset review form
     } catch (error) {
       console.error("Error fetching reviews:", error);
-      alert("Failed to load reviews.");
+      toast.error("Failed to load reviews.");
     }
   };
 
@@ -72,9 +74,26 @@ const MenuPage = () => {
     setQuantity((prev) => (increment ? prev + 1 : prev > 1 ? prev - 1 : 1));
   };
 
-  const handleAddToCart = () => {
-    alert(`Added ${quantity} x ${selectedFood?.name} to cart!`);
-    setSelectedFood(null);
+  const handleAddToCart = async () => {
+    if (selectedFood && user) {
+      try {
+        const cartData = {
+          userId: user.id,
+          foodItemId: selectedFood._id,
+          quantity: quantity,
+        };
+
+        await axios.post("/api/cart", cartData);
+
+        toast.success(`Added ${quantity} x ${selectedFood.name} to cart!`);
+        setSelectedFood(null);
+      } catch (error) {
+        console.error("Error adding to cart:", error);
+        toast.error("Failed to add to cart. Please try again.");
+      }
+    } else {
+      toast.error("Please log in to add items to your cart.");
+    }
   };
 
   const handleReviewSubmit = async () => {
@@ -114,14 +133,14 @@ const MenuPage = () => {
           )
         );
 
-        alert("Review submitted successfully!");
+        toast.success("Review submitted successfully!");
         setNewReview({ rating: 0, comment: "" });
       } catch (error) {
         console.error("Error submitting review:", error);
-        alert("Failed to submit review. Please try again.");
+        toast.error("Failed to submit review. Please try again.");
       }
     } else {
-      alert("Please log in and fill out all fields!");
+      toast.error("Please log in and fill out all fields!");
     }
   };
 
@@ -207,7 +226,6 @@ const MenuPage = () => {
               Add to Cart
             </button>
 
-            {/* Reviews Section */}
             {/* Reviews Section */}
             <h3 className="text-lg font-bold mb-4">Reviews</h3>
             <div className="flex flex-col items-start">
