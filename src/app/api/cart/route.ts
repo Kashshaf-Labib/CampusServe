@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import Cart from "@/lib/models/Cart";
+import Cart, { ICartItem } from "@/lib/models/Cart";
 import { dbConnect } from "@/db/config";
 
 export async function POST(req: Request) {
@@ -18,7 +18,7 @@ export async function POST(req: Request) {
 
     // Check if the item already exists in the cart
     const itemIndex = cart.items.findIndex(
-      (item) => item.foodItem.toString() === foodItemId
+      (item: ICartItem) => item.foodItem.toString() === foodItemId
     );
 
     if (itemIndex > -1) {
