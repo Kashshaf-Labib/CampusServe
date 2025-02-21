@@ -8,7 +8,7 @@ export interface ICartItem {
 }
 
 export interface ICart {
-  user: Schema.Types.ObjectId; // Reference to User
+  user: String; // Reference to clerk user
   items: ICartItem[];
   createdAt: Date;
   updatedAt: Date;

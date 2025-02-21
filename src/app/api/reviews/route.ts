@@ -4,7 +4,6 @@ import Review from "@/lib/models/Review";
 import FoodItem from "@/lib/models/FoodItem";
 import User from "@/lib/models/User";
 
-// **POST**: Add a new review
 export async function POST(req: Request) {
   try {
     const { foodItemId, userId, rating, comment } = await req.json();
@@ -37,7 +36,7 @@ export async function POST(req: Request) {
     // Create a new review
     const review = await Review.create({
       foodItem: foodItemId,
-      student: user._id,
+      user: user._id,
       rating,
       comment,
     });
@@ -52,7 +51,7 @@ export async function POST(req: Request) {
   }
 }
 
-// **GET**: Fetch reviews for a specific food item
+
 export async function GET(req: Request) {
   try {
     const { searchParams } = new URL(req.url);
@@ -68,7 +67,7 @@ export async function GET(req: Request) {
     }
 
     const reviews = await Review.find({ foodItem: foodItemId }).populate(
-      "student",
+      "user",
       "first_name last_name"
     );
 

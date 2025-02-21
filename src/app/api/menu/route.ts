@@ -14,7 +14,7 @@ export async function GET() {
     const populatedFoodItems = await Promise.all(
       foodItems.map(async (foodItem) => {
         const reviews = await Review.find({ foodItem: foodItem._id }).populate(
-          "student",
+          "user",
           "name"
         ); // Populate the "student" field in reviews
         return { ...foodItem, reviews };
