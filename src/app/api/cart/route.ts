@@ -40,3 +40,39 @@ export async function POST(req: Request) {
     );
   }
 }
+
+
+export async function GET(req: Request) {
+  await dbConnect();
+
+  const { searchParams } = new URL(req.url);
+  const userId = searchParams.get("userId");
+
+  if (!userId) {
+    return NextResponse.json(
+      { message: "User ID is required" },
+      { status: 400 }
+    );
+  }
+
+  try {
+    const cart = await Cart.findOne({ user: userId }).populate(
+      "items.foodItem"
+    );
+
+    if (!cart) {
+      return NextResponse.json(
+        { message: "Cart not found" },
+        { status: 404 }
+      );
+    }
+
+    return NextResponse.json(cart);
+  } catch (error) {
+    console.error("Error fetching cart:", error);
+    return NextResponse.json(
+      { message: "Failed to fetch cart" },
+      { status: 500 }
+    );
+  }
+}
