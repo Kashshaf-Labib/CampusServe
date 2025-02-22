@@ -193,17 +193,6 @@ const CartPage = () => {
                   </div>
                 </div>
                 <div className="flex items-center gap-4">
-                  {/* <input
-                    type="number"
-                    value={
-                      updatedQuantities[item.foodItem._id] || item.quantity
-                    }
-                    min="1"
-                    onChange={(e) =>
-                      handleQuantityChange(item.foodItem._id, +e.target.value)
-                    }
-                    className="w-16 bg-gray-700 text-white px-2 py-1 rounded-md"
-                  /> */}
                   <button
                     onClick={() =>
                       handleQuantityChange(

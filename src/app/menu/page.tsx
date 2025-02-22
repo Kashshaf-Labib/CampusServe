@@ -8,7 +8,7 @@ import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 interface Review {
-  student: {
+  user: {
     first_name: string;
     last_name: string;
   };
@@ -115,7 +115,7 @@ const MenuPage = () => {
           reviews: [
             ...selectedFood.reviews,
             {
-              student: {
+              user: {
                 first_name: user.firstName || "Anonymous",
                 last_name: user.lastName || "",
               },
@@ -262,8 +262,8 @@ const MenuPage = () => {
                         <div key={index} className="mb-2">
                           <p className="text-sm">
                             <strong className="text-white">
-                              {review.student?.first_name}{" "}
-                              {review.student?.last_name}
+                              {review.user?.first_name}{" "}
+                              {review.user?.last_name}
                             </strong>{" "}
                             <span className="text-yellow-400">
                               ({review.rating}/5)
@@ -283,20 +283,33 @@ const MenuPage = () => {
                 {selectedTab === "addReview" && (
                   <SignedIn>
                     <div className="flex flex-col gap-4">
-                      <input
-                        type="number"
-                        value={newReview.rating}
-                        min="1"
-                        max="5"
-                        onChange={(e) =>
-                          setNewReview((prev) => ({
-                            ...prev,
-                            rating: +e.target.value,
-                          }))
-                        }
-                        placeholder="Rating (1-5)"
-                        className="w-full px-3 py-2 rounded-md bg-gray-700 text-white"
-                      />
+                      <div className="flex items-center gap-2">
+                        <button
+                          onClick={() =>
+                            setNewReview((prev) => ({
+                              ...prev,
+                              rating: Math.max(1, prev.rating - 1),
+                            }))
+                          }
+                          className="bg-gray-700 text-white px-3 py-2 rounded-md"
+                        >
+                          -
+                        </button>
+                        <span className="w-8 text-center">
+                          {newReview.rating}
+                        </span>
+                        <button
+                          onClick={() =>
+                            setNewReview((prev) => ({
+                              ...prev,
+                              rating: Math.min(5, prev.rating + 1),
+                            }))
+                          }
+                          className="bg-gray-700 text-white px-3 py-2 rounded-md"
+                        >
+                          +
+                        </button>
+                      </div>
                       <textarea
                         value={newReview.comment}
                         onChange={(e) =>
