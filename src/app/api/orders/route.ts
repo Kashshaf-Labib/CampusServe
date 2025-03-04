@@ -42,3 +42,81 @@ export async function POST(req: Request) {
     );
   }
 }
+
+// Get pending orders
+export async function GET(req: Request) {
+  await dbConnect();
+
+  try {
+    const { searchParams } = new URL(req.url);
+    const statusFilter = searchParams.get("status");
+    const userId = searchParams.get("userId");
+
+    // For pending orders
+    if (statusFilter === "pending") {
+      const orders = await Order.find({
+        user: userId,
+        status: "pending",
+      }).populate("foodItems.foodItem");
+
+      return NextResponse.json(orders);
+    }
+
+    // For previous orders (completed/delivered)
+    const orders = await Order.find({
+      user: userId,
+      status: { $in: ["completed", "delivered"] },
+    }).populate("foodItems.foodItem");
+
+    return NextResponse.json(orders);
+  } catch (error) {
+    console.error("Error fetching orders:", error);
+    return NextResponse.json(
+      { error: "Failed to fetch orders" },
+      { status: 500 }
+    );
+  }
+}
+
+// Cancel order
+export async function PATCH(req: Request) {
+  await dbConnect();
+
+  try {
+    const { searchParams } = new URL(req.url);
+    const userId = searchParams.get("userId");
+    const { orderId } = await req.json();
+
+    if (!userId || !orderId) {
+      return NextResponse.json(
+        { error: "Missing user ID or order ID" },
+        { status: 400 }
+      );
+    }
+
+    const updatedOrder = await Order.findOneAndUpdate(
+      {
+        _id: orderId,
+        user: userId,
+        status: "pending",
+      },
+      { status: "cancelled" },
+      { new: true }
+    ).populate("foodItems.foodItem");
+
+    if (!updatedOrder) {
+      return NextResponse.json(
+        { error: "Order not found or cannot be cancelled" },
+        { status: 404 }
+      );
+    }
+
+    return NextResponse.json(updatedOrder);
+  } catch (error) {
+    console.error("Error cancelling order:", error);
+    return NextResponse.json(
+      { error: "Failed to cancel order" },
+      { status: 500 }
+    );
+  }
+}

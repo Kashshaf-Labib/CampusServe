@@ -1,7 +1,6 @@
 import { Webhook } from "svix";
 import { headers } from "next/headers";
 import { WebhookEvent } from "@clerk/nextjs/server";
-import { clerkClient } from "@clerk/nextjs/server";
 import { NextResponse } from "next/server";
 
 import { createUser } from "@/lib/actions/user.action";
@@ -51,8 +50,7 @@ export async function POST(req: Request) {
     });
   }
 
-  // Do something with payload
-  // For this guide, log payload to console
+  
   const { id } = evt.data;
   const eventType = evt.type;
 

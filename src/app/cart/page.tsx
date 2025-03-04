@@ -48,26 +48,12 @@ const CartPage = () => {
   // Fetch cart items for the logged-in user
   useEffect(() => {
     if (isSignedIn && user) {
-      // const fetchCart = async () => {
-      //   try {
-      //     const { data } = await axios.get("/api/cart", {
-      //       params: { userId: user.id },
-      //     });
-      //     setCart(data);
-      //     setItemRemoved(false); // Reset itemRemoved after fetching
-      //   } catch (error) {
-      //     console.error("Error fetching cart:", error);
-      //     toast.error("Failed to fetch cart items.");
-      //   } finally {
-      //     setLoading(false);
-      //   }
-      // };
       const fetchCart = async () => {
         try {
           const { data } = await axios.get("/api/cart", {
             params: { userId: user.id },
           });
-      
+
           // If cart exists, set it. Otherwise, set to null.
           if (data.items && data.items.length > 0) {
             setCart(data);
@@ -75,7 +61,6 @@ const CartPage = () => {
             setCart(null);
           }
         } catch (error) {
-          // Don't show error toast for 404 (cart not found)
           if (!axios.isAxiosError(error) || error.response?.status !== 404) {
             toast.error("Failed to fetch cart items.");
           }
