@@ -60,7 +60,11 @@ export async function GET(req: Request) {
     );
 
     if (!cart) {
-      return NextResponse.json({ message: "Cart not found" }, { status: 404 });
+      return NextResponse.json({
+        _id: null,
+        user: userId,
+        items: [],
+      });
     }
 
     return NextResponse.json(cart);
@@ -73,6 +77,7 @@ export async function GET(req: Request) {
   }
 }
 
+// Delete cart after confirmation of order
 export async function DELETE(req: Request) {
   await dbConnect();
 

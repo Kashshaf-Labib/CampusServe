@@ -3,6 +3,13 @@ import Order from "@/lib/models/Order";
 import Cart from "@/lib/models/Cart";
 import { dbConnect } from "@/db/config";
 
+// Token generation function
+const generateOrderToken = () => {
+  const timestamp = Date.now().toString().slice(-4);
+  const random = Math.random().toString(36).substr(2, 4).toUpperCase();
+  return `ORDER-${timestamp}-${random}`;
+};
+
 export async function POST(req: Request) {
   await dbConnect();
 
@@ -18,6 +25,7 @@ export async function POST(req: Request) {
       toBeDelivered,
       paid,
       status: "pending", // Default status
+      token: generateOrderToken(),
     });
 
     await order.save();

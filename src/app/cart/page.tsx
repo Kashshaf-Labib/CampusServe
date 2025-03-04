@@ -48,16 +48,38 @@ const CartPage = () => {
   // Fetch cart items for the logged-in user
   useEffect(() => {
     if (isSignedIn && user) {
+      // const fetchCart = async () => {
+      //   try {
+      //     const { data } = await axios.get("/api/cart", {
+      //       params: { userId: user.id },
+      //     });
+      //     setCart(data);
+      //     setItemRemoved(false); // Reset itemRemoved after fetching
+      //   } catch (error) {
+      //     console.error("Error fetching cart:", error);
+      //     toast.error("Failed to fetch cart items.");
+      //   } finally {
+      //     setLoading(false);
+      //   }
+      // };
       const fetchCart = async () => {
         try {
           const { data } = await axios.get("/api/cart", {
             params: { userId: user.id },
           });
-          setCart(data);
-          setItemRemoved(false); // Reset itemRemoved after fetching
+      
+          // If cart exists, set it. Otherwise, set to null.
+          if (data.items && data.items.length > 0) {
+            setCart(data);
+          } else {
+            setCart(null);
+          }
         } catch (error) {
-          console.error("Error fetching cart:", error);
-          toast.error("Failed to fetch cart items.");
+          // Don't show error toast for 404 (cart not found)
+          if (!axios.isAxiosError(error) || error.response?.status !== 404) {
+            toast.error("Failed to fetch cart items.");
+          }
+          setCart(null);
         } finally {
           setLoading(false);
         }
@@ -95,7 +117,7 @@ const CartPage = () => {
       };
 
       await axios.post("/api/orders", orderData);
-      await axios.delete(`/api/cart?userId=${user?.id}`); //clear the cart
+      // await axios.delete(`/api/cart?userId=${user?.id}`); //clear the cart
 
       toast.success("Order placed successfully!");
       setCart(null);
@@ -167,7 +189,7 @@ const CartPage = () => {
   return (
     <div className="min-h-screen bg-gray-900 text-white px-4 py-8">
       <h1 className="text-3xl font-bold text-center mb-6">Your Cart</h1>
-      {cart?.items.length === 0 ? (
+      {cart?.items?.length === 0 || !cart ? (
         <p className="text-center text-gray-400">Your cart is empty.</p>
       ) : (
         <div className="max-w-4xl mx-auto">
