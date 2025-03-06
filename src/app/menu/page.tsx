@@ -6,14 +6,19 @@ import axios from "axios";
 import { SignedIn, useUser } from "@clerk/nextjs";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import Comment from "@/components/Comment";
 
-interface Review {
+interface IReview {
+  _id: string;
   user: {
     first_name: string;
     last_name: string;
   };
-  rating: number;
+  rating?: number;
   comment: string;
+  replies: IReview[];
+  parentReview?: string;
+  createdAt: Date;
 }
 
 interface FoodItem {
@@ -22,7 +27,6 @@ interface FoodItem {
   description: string;
   price: number;
   imageUrl: string;
-  reviews: Review[];
 }
 
 const MenuPage = () => {
@@ -30,13 +34,13 @@ const MenuPage = () => {
   const [selectedFood, setSelectedFood] = useState<FoodItem | null>(null);
   const [quantity, setQuantity] = useState(1);
   const [newReview, setNewReview] = useState({
-    rating: 0,
+    rating: 5,
     comment: "",
   });
-
   const [selectedTab, setSelectedTab] = useState("reviews");
+  const [reviews, setReviews] = useState<IReview[]>([]);
 
-  const { user } = useUser(); // Fetch user details from Clerk
+  const { user } = useUser();
 
   useEffect(() => {
     const fetchMenu = async () => {
@@ -44,30 +48,35 @@ const MenuPage = () => {
         const { data } = await axios.get("/api/menu");
         setFoodItems(data);
       } catch (error) {
-        console.log("Error fetching menu:", error);
         toast.error("Failed to fetch menu.");
       }
     };
     fetchMenu();
   }, []);
 
+  const fetchReviews = async (foodItemId: string) => {
+    try {
+      const { data } = await axios.get(`/api/reviews?foodItemId=${foodItemId}`);
+      setReviews(data);
+    } catch (error) {
+      toast.error("Failed to load reviews.");
+    }
+  };
+
   const handleCardClick = async (food: FoodItem) => {
     try {
-      const { data: reviews } = await axios.get(
-        `/api/reviews?foodItemId=${food._id}`
-      );
-      const updatedFood = { ...food, reviews };
-      setSelectedFood(updatedFood);
-      setQuantity(1); // Reset quantity
-      setNewReview({ rating: 0, comment: "" }); // Reset review form
+      setSelectedFood(food);
+      setQuantity(1);
+      setNewReview({ rating: 5, comment: "" });
+      await fetchReviews(food._id);
     } catch (error) {
-      console.error("Error fetching reviews:", error);
-      toast.error("Failed to load reviews.");
+      toast.error("Failed to load food details.");
     }
   };
 
   const handleCloseModal = () => {
     setSelectedFood(null);
+    setReviews([]);
   };
 
   const handleQuantityChange = (increment: boolean) => {
@@ -77,19 +86,15 @@ const MenuPage = () => {
   const handleAddToCart = async () => {
     if (selectedFood && user) {
       try {
-        const cartData = {
+        await axios.post("/api/cart", {
           userId: user.id,
           foodItemId: selectedFood._id,
           quantity: quantity,
-        };
-
-        await axios.post("/api/cart", cartData);
-
+        });
         toast.success(`Added ${quantity} x ${selectedFood.name} to cart!`);
         setSelectedFood(null);
       } catch (error) {
-        console.error("Error adding to cart:", error);
-        toast.error("Failed to add to cart. Please try again.");
+        toast.error("Failed to add to cart.");
       }
     } else {
       toast.error("Please log in to add items to your cart.");
@@ -99,48 +104,21 @@ const MenuPage = () => {
   const handleReviewSubmit = async () => {
     if (selectedFood && user && newReview.rating && newReview.comment) {
       try {
-        const reviewData = {
+        await axios.post("/api/reviews", {
           foodItemId: selectedFood._id,
-          userId: user.id, // Use Clerk's user ID
+          userId: user.id,
           rating: newReview.rating,
           comment: newReview.comment,
-        };
-
-        // Post the review to the server
-        await axios.post("/api/reviews", reviewData);
-
-        // Update local state
-        const updatedFood: FoodItem = {
-          ...selectedFood,
-          reviews: [
-            ...selectedFood.reviews,
-            {
-              user: {
-                first_name: user.firstName || "Anonymous",
-                last_name: user.lastName || "",
-              },
-              rating: newReview.rating,
-              comment: newReview.comment,
-            },
-          ],
-        };
-
-        setSelectedFood(updatedFood);
-
-        setFoodItems((prev) =>
-          prev.map((food) =>
-            food._id === updatedFood._id ? updatedFood : food
-          )
-        );
+        });
 
         toast.success("Review submitted successfully!");
-        setNewReview({ rating: 0, comment: "" });
+        setNewReview({ rating: 5, comment: "" });
+        await fetchReviews(selectedFood._id);
       } catch (error) {
-        console.error("Error submitting review:", error);
-        toast.error("Failed to submit review. Please try again.");
+        toast.error("Failed to submit review.");
       }
     } else {
-      toast.error("Please log in and fill out all fields!");
+      toast.error("Please fill out all fields!");
     }
   };
 
@@ -176,7 +154,6 @@ const MenuPage = () => {
         ))}
       </div>
 
-      {/* Modal */}
       {selectedFood && (
         <div className="fixed inset-0 bg-black bg-opacity-75 flex justify-center items-center z-50">
           <div className="bg-gray-800 text-white rounded-lg shadow-lg w-11/12 max-w-md p-6 relative">
@@ -226,10 +203,8 @@ const MenuPage = () => {
               Add to Cart
             </button>
 
-            {/* Reviews Section */}
             <h3 className="text-lg font-bold mb-4">Reviews</h3>
             <div className="flex flex-col items-start">
-              {/* Tabs for switching between "Reviews" and "Add Review" */}
               <div className="flex w-full mb-4 border-b border-gray-600">
                 <button
                   className={`px-4 py-2 text-sm ${
@@ -253,26 +228,17 @@ const MenuPage = () => {
                 </button>
               </div>
 
-              {/* Tab Content */}
               <div className="w-full">
                 {selectedTab === "reviews" && (
-                  <div className="max-h-32 overflow-y-auto mb-4">
-                    {selectedFood.reviews.length > 0 ? (
-                      selectedFood.reviews.map((review, index) => (
-                        <div key={index} className="mb-2">
-                          <p className="text-sm">
-                            <strong className="text-white">
-                              {review.user?.first_name}{" "}
-                              {review.user?.last_name}
-                            </strong>{" "}
-                            <span className="text-yellow-400">
-                              ({review.rating}/5)
-                            </span>
-                          </p>
-                          <p className="text-gray-300 text-sm">
-                            {review.comment}
-                          </p>
-                        </div>
+                  <div className="max-h-64 overflow-y-auto mb-4 space-y-4">
+                    {reviews.length > 0 ? (
+                      reviews.map((review) => (
+                        <Comment
+                          key={review._id}
+                          comment={review}
+                          depth={0}
+                          onReply={() => fetchReviews(selectedFood._id)}
+                        />
                       ))
                     ) : (
                       <p className="text-gray-500 text-sm">No reviews yet.</p>
@@ -284,31 +250,22 @@ const MenuPage = () => {
                   <SignedIn>
                     <div className="flex flex-col gap-4">
                       <div className="flex items-center gap-2">
-                        <button
-                          onClick={() =>
+                        <select
+                          value={newReview.rating}
+                          onChange={(e) =>
                             setNewReview((prev) => ({
                               ...prev,
-                              rating: Math.max(1, prev.rating - 1),
+                              rating: Number(e.target.value),
                             }))
                           }
-                          className="bg-gray-700 text-white px-3 py-2 rounded-md"
+                          className="bg-gray-700 text-white p-2 rounded"
                         >
-                          -
-                        </button>
-                        <span className="w-8 text-center">
-                          {newReview.rating}
-                        </span>
-                        <button
-                          onClick={() =>
-                            setNewReview((prev) => ({
-                              ...prev,
-                              rating: Math.min(5, prev.rating + 1),
-                            }))
-                          }
-                          className="bg-gray-700 text-white px-3 py-2 rounded-md"
-                        >
-                          +
-                        </button>
+                          {[5, 4, 3, 2, 1].map((num) => (
+                            <option key={num} value={num}>
+                              {num} Stars
+                            </option>
+                          ))}
+                        </select>
                       </div>
                       <textarea
                         value={newReview.comment}
@@ -318,9 +275,10 @@ const MenuPage = () => {
                             comment: e.target.value,
                           }))
                         }
-                        placeholder="Write your comment"
+                        placeholder="Write your review..."
                         className="w-full px-3 py-2 rounded-md bg-gray-700 text-white"
-                      ></textarea>
+                        rows={4}
+                      />
                       <button
                         onClick={handleReviewSubmit}
                         className="bg-blue-500 text-white py-2 px-4 rounded-md shadow-md hover:bg-blue-600"
@@ -335,6 +293,7 @@ const MenuPage = () => {
           </div>
         </div>
       )}
+      <ToastContainer position="bottom-right" theme="dark" />
     </div>
   );
 };
