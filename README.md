@@ -51,8 +51,6 @@ CampusServe is an integrated management system designed to streamline operations
 | `/orders/admin` | PATCH | Admin order status updates |
 | `/reviews`      | POST, GET | Manage food reviews and ratings |
 
-## 🔄 Workflow Diagram
-![Workflow Diagram](WorkflowDiagram.pdf)
 
 ## 🔥 Use Case Scenarios
 - A student places an order and gets notified when it’s ready.
