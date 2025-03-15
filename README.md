@@ -1,36 +1,75 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# CampusServe
 
-## Getting Started
+## 🚀 Project Overview
+CampusServe is an integrated management system designed to streamline operations for the University Central Departmental Store (CDS). The system automates food ordering, token issuance, dorm-specific delivery, and real-time order tracking, improving efficiency and user experience.
 
-First, run the development server:
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+## ✨ Features
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### 🥘 Food Ordering System
+- Users (students, teachers, and staff) can browse the menu and place food orders online.
+- Each order generates a token for food pickup.
+- Real-time notifications inform users when food is ready.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### 🏠 Dorm-Specific Delivery
+- Female dorm residents can order food online for delivery after 6 PM.
+- Notifications alert users when their food is out for delivery and has arrived.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### 📊 Report Generation
+- Users can generate reports based on their order history and spending.
+- Admins can extract sales reports for analysis.
 
-## Learn More
+### ⭐ Review & Rating System
+- Users can submit ratings and reviews for food items.
+- Admins can analyze feedback to improve offerings.
 
-To learn more about Next.js, take a look at the following resources:
+### 💬 Multi-Level Commenting
+- Users can comment on food items and reply to existing comments.
+- Recursive comment support allows structured discussions.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### 🤖 AI-Powered Chatbot
+- Chatbot powered by the Gemini API to assist users.
+- Provides instant answers to FAQs about ordering and system usage.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## 🏗️ Tech Stack
 
-## Deploy on Vercel
+- **Frontend:** Next.js, Tailwind CSS
+- **Backend:** Node.js, Express.js
+- **Database:** MongoDB
+- **Authentication:** Clerk (OAuth, email/password)
+- **Chatbot:** Gemini API
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## 🔗 API Endpoints
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+| Endpoint         | Method | Description |
+|-----------------|--------|-------------|
+| `/cart`         | GET, POST, DELETE, PATCH | Manage user's food cart |
+| `/cart/item`    | DELETE | Remove an item from the cart |
+| `/chat`         | POST | Chatbot backend interaction |
+| `/menu`         | GET, POST | Retrieve or add menu items |
+| `/orders`       | POST, GET, PATCH | Handle user orders |
+| `/orders/admin` | PATCH | Admin order status updates |
+| `/reviews`      | POST, GET | Manage food reviews and ratings |
+
+## 🔄 Workflow Diagram
+![Workflow Diagram](WorkflowDiagram.pdf)
+
+## 🔥 Use Case Scenarios
+- A student places an order and gets notified when it’s ready.
+- A dorm resident orders food and receives an alert when delivered.
+- An admin generates a monthly sales report to analyze peak order times.
+- A user leaves a rating and review for a meal.
+- Users discuss food quality using multi-level comments.
+- A user interacts with the chatbot for order guidance.
+
+## 🛠️ Challenges & Solutions
+**Challenge:** Implementing recursive multi-level comments.  
+**Solution:** Designed a recursive algorithm for smooth comment handling.
+
+## 🚀 Future Improvements
+- 📱 **Admin App** for better inventory & order management.
+- 🔔 **Real-time Notifications** for order updates.
+- 💳 **Payment Integration** for seamless transactions.
+
+## 🎯 Conclusion
+CampusServe enhances the efficiency of university CDS operations through automation and digital tools. With AI-powered assistance, review systems, and order tracking, it ensures a seamless experience. Future enhancements aim to introduce an admin app, real-time notifications, and payment integration to further optimize the system.
